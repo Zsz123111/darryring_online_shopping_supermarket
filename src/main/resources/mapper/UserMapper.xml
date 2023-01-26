@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zsz.darryring.mapper.UserMapper">
+
+    <resultMap id="userMapper" type="com.zsz.darryring.domain.User">
+        <id property="uid" column="uid"></id>
+        <result property="uphone" column="uphone"></result>
+        <result property="upassword" column="upassword"></result>
+        <result property="urealname" column="urealname"></result>
+        <result property="ugender" column="ugender"></result>
+        <result property="ubirthday" column="ubirthday" jdbcType="DATE"></result>
+        <result property="uurl" column="uurl"></result>
+        <collection property="shopCart" column="uid" ofType="com.zsz.darryring.domain.Ring">
+            <id property="rid" column="rid"></id>
+            <result property="rname" column="rname"></result>
+            <result property="rprice" column="rprice"></result>
+            <result property="rsales" column="rsales"></result>
+            <result property="rurl" column="rurl"></result>
+        </collection>
+        <collection property="ordersList" column="uid" ofType="com.zsz.darryring.domain.Order" select="com.zsz.darryring.mapper.OrderMapper.findOrdersByUid">
+        </collection>
+    </resultMap>
+
+    <select id="findUserAllInfoByUid" resultMap="userMapper">
+        select * from user
+        left join shopcart on user.uid=shopcart.uid
+        left join ring on shopcart.rid=ring.rid
+        where user.uid = #{uid};
+    </select>
+    <select id="findUserAllAddressByUid" resultType="com.zsz.darryring.domain.Address">
+        select * from address where uid=#{uid}
+    </select>
+</mapper>

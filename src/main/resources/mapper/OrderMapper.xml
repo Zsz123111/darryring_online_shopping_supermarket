@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zsz.darryring.mapper.OrderMapper">
+
+    <resultMap id="orderMapper" type="com.zsz.darryring.domain.Order">
+        <id property="oid" column="oid"></id>
+        <result property="odate" column="odate" jdbcType="DATE"></result>
+        <result property="ostatues" column="ostatues"></result>
+        <result property="otransports" column="otransports"></result>
+        <association property="address" column="aid" javaType="com.zsz.darryring.domain.Address" select="com.zsz.darryring.mapper.AddressMapper.findAddressByAid"></association>
+        <collection property="orderRings" column="oid" ofType="com.zsz.darryring.domain.mypojo.OrderRing">
+            <id property="rid" column="rid"></id>
+            <result property="rNum" column="ornum"></result>
+            <result property="rSumPrice" column="orprice"></result>
+        </collection>
+    </resultMap>
+
+
+    <insert id="insertNewOrder">
+        insert into `order`(oid,odate,uid,ostatues,oaid,otransports)
+        values (#{oid},#{date},#{uid},'0',#{aid},#{trans})
+    </insert>
+    <insert id="insertNewOrderRing">
+        insert into order_ring(oid,rid,ornum,orprice)
+        values (#{oid},#{rid},1,(select rprice from ring where rid = #{rid}))
+    </insert>
+    <update id="updateOrderStatuesByOid">
+        update `order` set ostatues = '1' where oid = #{oid};
+    </update>
+
+    <select id="findOrdersByUid" resultMap="orderMapper">
+        select *
+        from `order`
+                 left join order_ring
+                           on order_ring.oid=`order`.oid
+                 left join ring
+                           on ring.rid=order_ring.rid
+        where `order`.uid=#{uid};
+    </select>
+</mapper>
