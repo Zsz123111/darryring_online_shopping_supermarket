@@ -6,3 +6,4 @@
 
 # 延伸阅读
 
+![输入图片说明](showpngimage.png)
